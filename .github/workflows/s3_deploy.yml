@@ -1,0 +1,49 @@
+# This is the name of our Github Action Workflow
+name: S3 Deploy
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: 
+      - 'main'
+      
+jobs:
+  # This workflow contains a single job called "NextAppS3Deploy"
+  
+  NextAppS3Deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    steps:
+    
+    # Checkout the code
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 12
+    
+    # Install all app dependencies
+    - name: Install dependencies
+      run: npm install
+    
+    # Run any tests
+    - name: Tests
+      run: npm run test
+
+    # Build & Export the app to static files
+    - name: Build & Export to static files
+      run: |
+        npm run build
+        npm run export
+
+    # Configures the AWS Credentials using Github Secrets
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    
+    # Deploys the ./out/ files to AWS S3 
+    - name: Copy files to S3 Bucket
+      run: |
+        aws s3 sync .s3://{{ secrets.AWS_S3_BUCKET_NAME }}
+        aws-region: eu-west-1
