@@ -13,7 +13,7 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Pete's NextJS App with Github Actions and S3!
+          Petes NextJS App with Github Actions and S3!
         </h1>
 
         <p className={styles.description}>
